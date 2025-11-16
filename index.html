@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>PatternCraft (Demo)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <style>
+      body {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+          sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+      }
+
+      .container {
+        background: #ffffff;
+        max-width: 800px;
+        width: 100%;
+        padding: 1.5rem 2rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+      }
+
+      h1 {
+        margin-top: 0;
+        font-size: 1.8rem;
+      }
+
+      label {
+        display: block;
+        font-weight: 600;
+        margin-top: 1rem;
+        margin-bottom: 0.25rem;
+      }
+
+      input[type="file"],
+      textarea,
+      button {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      textarea {
+        min-height: 70px;
+        padding: 0.6rem;
+        font-family: inherit;
+        resize: vertical;
+      }
+
+      #result {
+        min-height: 220px;
+        white-space: pre-wrap;
+      }
+
+      button {
+        margin-top: 0.5rem;
+        padding: 0.7rem 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        border: none;
+        background: #2563eb;
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background: #1d4ed8;
+      }
+
+      #status {
+        margin-top: 0.5rem;
+        font-size: 0.9rem;
+        color: #555;
+      }
+
+      .small-help {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.25rem;
+      }
+
+      /* Units toggle */
+      .unit-toggle {
+        margin-top: 0.75rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+      }
+
+      .unit-toggle-label {
+        font-weight: 600;
+      }
+
+      .unit-toggle-buttons {
+        display: inline-flex;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 1px solid #d4d4d4;
+      }
+
+      .unit-toggle-buttons button {
+        border: none;
+        padding: 0.25rem 0.75rem;
+        cursor: pointer;
+        background: #f3f4f6;
+        font-size: 0.9rem;
+      }
+
+      .unit-toggle-buttons button.active {
+        background: #2563eb;
+        color: #ffffff;
+      }
+
+      /* Size buttons – stacked for now */
+      .size-block {
+        margin-top: 1rem;
+      }
+
+      .size-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      .size-btn {
+        display: block;
+        width: 100%;
+        border-radius: 999px;
+        border: 1px solid #d4d4d4;
+        background: #f9fafb;
+        padding: 0.5rem 0.75rem;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-bottom: 0.4rem;
+      }
+
+      .size-btn.active {
+        background: #2563eb;
+        color: #ffffff;
+        border-color: #2563eb;
+      }
+
+      .size-info {
+        margin-top: 0.25rem;
+        font-size: 0.85rem;
+        color: #555;
+        text-align: center;
+      }
+
+      .actions-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .actions-row button {
+        flex: 1;
+      }
+
+      .secondary-btn {
+        background: #16a34a;
+      }
+
+      .secondary-btn:hover {
+        background: #15803d;
+      }
+
+      .tertiary-btn {
+        background: #f97316;
+      }
+
+      .tertiary-btn:hover {
+        background: #ea580c;
+      }
+
+      .photos-help {
+        font-size: 0.8rem;
+        color: #666;
+        margin-top: 0.25rem;
+      }
+
+      .add-photo-btn {
+        width: auto;
+        background: #e5e7eb;
+        color: #111827;
+        font-size: 0.85rem;
+        padding: 0.35rem 0.75rem;
+      }
+
+      .add-photo-btn:hover {
+        background: #d1d5db;
+      }
+
+      @media (min-width: 720px) {
+        .top-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-start;
+          gap: 2rem;
+        }
+
+        .top-row > div {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1>PatternCraft (Demo)</h1>
+
+      <!-- Bag photos -->
+      <label>Bag photos</label>
+      <div id="photoInputs">
+        <input type="file" accept="image/*" class="photo-input" />
+      </div>
+      <button type="button" id="addPhotoBtn" class="add-photo-btn">
+        + Add another photo
+      </button>
+      <div class="photos-help">
+        You can add multiple photos of the same project (front, side, back,
+        inside).
+      </div>
+
+      <!-- Notes -->
+      <label for="userText">Optional notes about the bag</label>
+      <textarea
+        id="userText"
+        placeholder="e.g. Medium roll top backpack with front pocket and side bottle pockets"
+      ></textarea>
+
+      <!-- Units + Size -->
+      <div class="top-row" style="margin-top: 0.75rem">
+        <!-- Units -->
+        <div>
+          <div class="unit-toggle">
+            <span class="unit-toggle-label">Units:</span>
+            <div class="unit-toggle-buttons">
+              <button type="button" id="unitsCm" data-units="cm" class="active">
+                cm
+              </button>
+              <button type="button" id="unitsIn" data-units="in">inch</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Size -->
+        <div class="size-block">
+          <span class="size-label">Backpack size:</span>
+          <button type="button" class="size-btn" data-size="S">S</button>
+          <button type="button" class="size-btn active" data-size="M">M</button>
+          <button type="button" class="size-btn" data-size="L">L</button>
+          <button type="button" class="size-btn" data-size="XL">XL</button>
+          <button type="button" class="size-btn" data-size="XXL">XXL</button>
+          <div id="sizeInfo" class="size-info">
+            M — approx. 30 × 40 × 13 cm (W×H×D).
+          </div>
+        </div>
+      </div>
+
+      <!-- Generate -->
+      <button id="generateBtn" style="margin-top: 1.2rem">
+        Generate Pattern JSON
+      </button>
+      <div id="status"></div>
+
+      <!-- Copy / Download -->
+      <div class="actions-row">
+        <button id="copyBtn" type="button" class="secondary-btn">
+          Copy Output
+        </button>
+        <button id="downloadBtn" type="button" class="tertiary-btn">
+          Download as .txt
+        </button>
+      </div>
+
+      <!-- Output -->
+      <label for="result" style="margin-top: 1rem">PatternCraft JSON output</label>
+      <textarea id="result" readonly></textarea>
+    </div>
+
+    <!-- Frontend logic: calls Supabase Edge Function -->
+    <script>
+      // 🔗 Your Supabase Edge Function URL
+      const PATTERNCRAFT_URL =
+        "https://haikwxscdgxplftrkqbi.supabase.co/functions/v1/patterncraft-generate";
+
+      const photoInputsContainer = document.getElementById("photoInputs");
+      const addPhotoBtn = document.getElementById("addPhotoBtn");
+      const userTextInput = document.getElementById("userText");
+      const generateBtn = document.getElementById("generateBtn");
+      const statusEl = document.getElementById("status");
+      const resultEl = document.getElementById("result");
+      const copyBtn = document.getElementById("copyBtn");
+      const downloadBtn = document.getElementById("downloadBtn");
+
+      // Units toggle
+      const unitsCmBtn = document.getElementById("unitsCm");
+      const unitsInBtn = document.getElementById("unitsIn");
+      let currentUnits = "cm";
+
+      function setUnits(units) {
+        currentUnits = units;
+        if (units === "cm") {
+          unitsCmBtn.classList.add("active");
+          unitsInBtn.classList.remove("active");
+        } else {
+          unitsCmBtn.classList.remove("active");
+          unitsInBtn.classList.add("active");
+        }
+      }
+
+      unitsCmBtn.addEventListener("click", () => setUnits("cm"));
+      unitsInBtn.addEventListener("click", () => setUnits("in"));
+
+      // Backpack sizes
+      const sizeButtons = document.querySelectorAll(".size-btn");
+      const sizeInfoEl = document.getElementById("sizeInfo");
+      let selectedSize = "M";
+
+      const sizePresets = {
+        S: "S — approx. 26 × 36 × 11 cm (W×H×D).",
+        M: "M — approx. 30 × 40 × 13 cm (W×H×D).",
+        L: "L — approx. 34 × 44 × 15 cm (W×H×D).",
+        XL: "XL — approx. 38 × 48 × 17 cm (W×H×D).",
+        XXL: "XXL — approx. 42 × 52 × 19 cm (W×H×D)."
+      };
+
+      function updateSizeInfo() {
+        sizeInfoEl.textContent =
+          sizePresets[selectedSize] || "Custom size selected.";
+      }
+
+      sizeButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          sizeButtons.forEach((b) => b.classList.remove("active"));
+          btn.classList.add("active");
+          selectedSize = btn.getAttribute("data-size");
+          updateSizeInfo();
+        });
+      });
+
+      updateSizeInfo();
+
+      // Add another photo input
+      addPhotoBtn.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.className = "photo-input";
+        photoInputsContainer.appendChild(input);
+      });
+
+      // File -> base64 helper
+      function fileToBase64(file) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const base64 = reader.result.split(",")[1];
+            resolve(base64);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
+
+      // Generate button
+      generateBtn.addEventListener("click", async () => {
+        try {
+          resultEl.value = "";
+          statusEl.textContent = "";
+
+          const fileInputs = Array.from(
+            document.querySelectorAll(".photo-input")
+          );
+          const files = fileInputs
+            .map((input) => input.files && input.files[0])
+            .filter(Boolean);
+
+          if (!files.length) {
+            alert("Please choose at least one image.");
+            return;
+          }
+
+          statusEl.textContent = "Reading images…";
+
+          const images = [];
+          for (const file of files) {
+            const base64 = await fileToBase64(file);
+            images.push({
+              imageBase64: base64,
+              imageMimeType: file.type
+            });
+          }
+
+          const payload = {
+            images,
+            userText: userTextInput.value.trim(),
+            units: currentUnits,
+            sizeLabel: selectedSize
+          };
+
+          statusEl.textContent = "Calling PatternCraft…";
+
+          const response = await fetch(PATTERNCRAFT_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+          });
+
+          if (!response.ok) {
+            const txt = await response.text();
+            throw new Error("HTTP " + response.status + ": " + txt);
+          }
+
+          const data = await response.json();
+
+          // Prefer parsed JSON pattern
+          const output =
+            data.patternJson || data.patternText || "(No pattern returned)";
+          resultEl.value =
+            typeof output === "string"
+              ? output
+              : JSON.stringify(output, null, 2);
+
+          statusEl.textContent = data.patternJson?.status || "Done!";
+        } catch (err) {
+          console.error(err);
+          statusEl.textContent = "Error calling PatternCraft.";
+          alert("Something went wrong. Check the console for details.");
+        }
+      });
+
+      // Copy button
+      copyBtn.addEventListener("click", async () => {
+        if (!resultEl.value.trim()) {
+          alert("Nothing to copy.");
+          return;
+        }
+        await navigator.clipboard.writeText(resultEl.value);
+        statusEl.textContent = "Copied!";
+      });
+
+      // Download button
+      downloadBtn.addEventListener("click", () => {
+        if (!resultEl.value.trim()) {
+          alert("Nothing to download.");
+          return;
+        }
+        const blob = new Blob([resultEl.value], {
+          type: "text/plain;charset=utf-8"
+        });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "patterncraft-pattern.txt";
+        link.click();
+      });
+    </script>
+  </body>
+</html>
