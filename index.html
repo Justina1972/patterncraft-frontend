@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>PatternCraft (Demo)</title>
+    <title>PatternCraft</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <style>
@@ -40,11 +40,11 @@
       input[type="file"],
       textarea,
       button {
-        width: 100%;
         box-sizing: border-box;
       }
 
       textarea {
+        width: 100%;
         min-height: 70px;
         padding: 0.6rem;
         font-family: inherit;
@@ -52,6 +52,7 @@
       }
 
       #result {
+        width: 100%;
         min-height: 220px;
         white-space: pre-wrap;
       }
@@ -110,6 +111,7 @@
         cursor: pointer;
         background: #f3f4f6;
         font-size: 0.9rem;
+        margin-top: 0;
       }
 
       .unit-toggle-buttons button.active {
@@ -117,7 +119,7 @@
         color: #ffffff;
       }
 
-      /* Size buttons – stacked for now */
+      /* Size buttons – full width stack */
       .size-block {
         margin-top: 1rem;
       }
@@ -138,6 +140,7 @@
         font-size: 1rem;
         cursor: pointer;
         margin-bottom: 0.4rem;
+        text-align: center;
       }
 
       .size-btn.active {
@@ -186,15 +189,21 @@
         margin-top: 0.25rem;
       }
 
-      .add-photo-btn {
-        width: auto;
+      .photo-buttons-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .small-btn {
         background: #e5e7eb;
         color: #111827;
         font-size: 0.85rem;
         padding: 0.35rem 0.75rem;
       }
 
-      .add-photo-btn:hover {
+      .small-btn:hover {
         background: #d1d5db;
       }
 
@@ -220,21 +229,39 @@
       <!-- Bag photos -->
       <label>Bag photos</label>
       <div id="photoInputs">
+        <!-- First normal file input -->
         <input type="file" accept="image/*" class="photo-input" />
       </div>
-      <button type="button" id="addPhotoBtn" class="add-photo-btn">
-        + Add another photo
-      </button>
+
+      <!-- Hidden camera input (for mobile/tablet capture) -->
+      <input
+        id="cameraInput"
+        type="file"
+        accept="image/*"
+        capture="environment"
+        class="photo-input"
+        style="display: none"
+      />
+
+      <div class="photo-buttons-row">
+        <button type="button" id="addPhotoBtn" class="small-btn">
+          + Add another photo
+        </button>
+        <button type="button" id="takePhotoBtn" class="small-btn">
+          📸 Take a photo
+        </button>
+      </div>
+
       <div class="photos-help">
-        You can add multiple photos of the same project (front, side, back,
-        inside).
+        You can upload or snap multiple photos of the same project (front, side,
+        back, inside).
       </div>
 
       <!-- Notes -->
       <label for="userText">Optional notes about the bag</label>
       <textarea
         id="userText"
-        placeholder="e.g. Medium roll top backpack with front pocket and side bottle pockets"
+        placeholder="e.g. Medium tote with zip, front pocket, and short handles."
       ></textarea>
 
       <!-- Units + Size -->
@@ -254,14 +281,16 @@
 
         <!-- Size -->
         <div class="size-block">
-          <span class="size-label">Backpack size:</span>
+          <span class="size-label">Size:</span>
           <button type="button" class="size-btn" data-size="S">S</button>
-          <button type="button" class="size-btn active" data-size="M">M</button>
+          <button type="button" class="size-btn active" data-size="M">
+            M
+          </button>
           <button type="button" class="size-btn" data-size="L">L</button>
           <button type="button" class="size-btn" data-size="XL">XL</button>
           <button type="button" class="size-btn" data-size="XXL">XXL</button>
           <div id="sizeInfo" class="size-info">
-            M — approx. 30 × 40 × 13 cm (W×H×D).
+            M — approx. 30 × 40 × 13 (W×H×D).
           </div>
         </div>
       </div>
@@ -287,14 +316,17 @@
       <textarea id="result" readonly></textarea>
     </div>
 
-    <!-- Frontend logic: calls Supabase Edge Function -->
-    <script>
-      // 🔗 Your Supabase Edge Function URL
+    <!-- Frontend logic -->
+    <script type="module">
+      // ⚠️ Make sure this matches your deployed Supabase edge URL
       const PATTERNCRAFT_URL =
         "https://haikwxscdgxplftrkqbi.supabase.co/functions/v1/patterncraft-generate";
 
+      // Elements
       const photoInputsContainer = document.getElementById("photoInputs");
       const addPhotoBtn = document.getElementById("addPhotoBtn");
+      const takePhotoBtn = document.getElementById("takePhotoBtn");
+      const cameraInput = document.getElementById("cameraInput");
       const userTextInput = document.getElementById("userText");
       const generateBtn = document.getElementById("generateBtn");
       const statusEl = document.getElementById("status");
@@ -321,17 +353,17 @@
       unitsCmBtn.addEventListener("click", () => setUnits("cm"));
       unitsInBtn.addEventListener("click", () => setUnits("in"));
 
-      // Backpack sizes
+      // Size presets
       const sizeButtons = document.querySelectorAll(".size-btn");
       const sizeInfoEl = document.getElementById("sizeInfo");
       let selectedSize = "M";
 
       const sizePresets = {
-        S: "S — approx. 26 × 36 × 11 cm (W×H×D).",
-        M: "M — approx. 30 × 40 × 13 cm (W×H×D).",
-        L: "L — approx. 34 × 44 × 15 cm (W×H×D).",
-        XL: "XL — approx. 38 × 48 × 17 cm (W×H×D).",
-        XXL: "XXL — approx. 42 × 52 × 19 cm (W×H×D)."
+        S: "S — approx. 24 × 30 × 10 (W×H×D).",
+        M: "M — approx. 30 × 40 × 13 (W×H×D).",
+        L: "L — approx. 36 × 46 × 15 (W×H×D).",
+        XL: "XL — approx. 40 × 50 × 18 (W×H×D).",
+        XXL: "XXL — approx. 45 × 55 × 20 (W×H×D)."
       };
 
       function updateSizeInfo() {
@@ -350,7 +382,7 @@
 
       updateSizeInfo();
 
-      // Add another photo input
+      // Add another photo input (gallery / files)
       addPhotoBtn.addEventListener("click", () => {
         const input = document.createElement("input");
         input.type = "file";
@@ -359,12 +391,17 @@
         photoInputsContainer.appendChild(input);
       });
 
+      // Take a photo (opens camera on mobile/tablet)
+      takePhotoBtn.addEventListener("click", () => {
+        cameraInput.click();
+      });
+
       // File -> base64 helper
       function fileToBase64(file) {
         return new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = () => {
-            const base64 = reader.result.split(",")[1];
+            const base64 = String(reader.result).split(",")[1];
             resolve(base64);
           };
           reader.onerror = reject;
@@ -376,37 +413,30 @@
       generateBtn.addEventListener("click", async () => {
         try {
           resultEl.value = "";
-          statusEl.textContent = "";
+          statusEl.textContent = "Preparing images…";
 
           const fileInputs = Array.from(
             document.querySelectorAll(".photo-input")
           );
+
           const files = fileInputs
             .map((input) => input.files && input.files[0])
             .filter(Boolean);
 
           if (!files.length) {
-            alert("Please choose at least one image.");
+            alert("Please choose or take at least one photo.");
+            statusEl.textContent = "No images selected.";
             return;
           }
-
-          statusEl.textContent = "Reading images…";
 
           const images = [];
           for (const file of files) {
             const base64 = await fileToBase64(file);
             images.push({
               imageBase64: base64,
-              imageMimeType: file.type
+              imageMimeType: file.type || "image/jpeg"
             });
           }
-
-          const payload = {
-            images,
-            userText: userTextInput.value.trim(),
-            units: currentUnits,
-            sizeLabel: selectedSize
-          };
 
           statusEl.textContent = "Calling PatternCraft…";
 
@@ -415,29 +445,45 @@
             headers: {
               "Content-Type": "application/json"
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({
+              images,
+              userText: userTextInput.value.trim(),
+              units: currentUnits,
+              sizeLabel: selectedSize
+            })
           });
 
           if (!response.ok) {
-            const txt = await response.text();
-            throw new Error("HTTP " + response.status + ": " + txt);
+            const text = await response.text();
+            console.error("PatternCraft error:", text);
+            statusEl.textContent = "Error from PatternCraft.";
+            alert("PatternCraft error. Please try again.");
+            return;
           }
 
           const data = await response.json();
+          let outputText;
 
-          // Prefer parsed JSON pattern
-          const output =
-            data.patternJson || data.patternText || "(No pattern returned)";
-          resultEl.value =
-            typeof output === "string"
-              ? output
-              : JSON.stringify(output, null, 2);
+          if (typeof data === "string") {
+            outputText = data;
+          } else if (data.patternText || data.patternJson) {
+            // Prefer showing pretty JSON if we have parsed JSON
+            if (data.patternJson) {
+              outputText = JSON.stringify(data.patternJson, null, 2);
+            } else {
+              outputText = data.patternText;
+            }
+          } else {
+            outputText = JSON.stringify(data, null, 2);
+          }
 
-          statusEl.textContent = data.patternJson?.status || "Done!";
+          resultEl.value = outputText || "(No pattern returned)";
+          statusEl.textContent =
+            (data.patternJson && data.patternJson.status) || "Done!";
         } catch (err) {
           console.error(err);
           statusEl.textContent = "Error calling PatternCraft.";
-          alert("Something went wrong. Check the console for details.");
+          alert("Something went wrong. Please try again.");
         }
       });
 
