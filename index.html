@@ -2,515 +2,319 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>PatternCraft</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-
+    <title>AskJack | East Rand Online Directory</title>
     <style>
-      body {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-          sans-serif;
-        background: #f5f5f5;
-        margin: 0;
-        padding: 2rem;
-        display: flex;
-        justify-content: center;
+      :root {
+        --bg: #f6f8fc;
+        --surface: #ffffff;
+        --text: #1f2937;
+        --muted: #6b7280;
+        --brand: #0f766e;
+        --brand-dark: #115e59;
+        --border: #dbe3ef;
       }
 
-      .container {
-        background: #ffffff;
-        max-width: 800px;
-        width: 100%;
-        padding: 1.5rem 2rem 2rem;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-      }
-
-      h1 {
-        margin-top: 0;
-        font-size: 1.8rem;
-      }
-
-      label {
-        display: block;
-        font-weight: 600;
-        margin-top: 1rem;
-        margin-bottom: 0.25rem;
-      }
-
-      input[type="file"],
-      textarea,
-      button {
+      * {
         box-sizing: border-box;
       }
 
-      textarea {
-        width: 100%;
-        min-height: 70px;
-        padding: 0.6rem;
-        font-family: inherit;
-        resize: vertical;
+      body {
+        margin: 0;
+        font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
       }
 
-      #result {
-        width: 100%;
-        min-height: 220px;
-        white-space: pre-wrap;
+      a {
+        color: inherit;
+        text-decoration: none;
       }
 
-      button {
-        margin-top: 0.5rem;
-        padding: 0.7rem 1rem;
-        font-size: 1rem;
-        font-weight: 600;
-        border-radius: 8px;
-        border: none;
-        background: #2563eb;
-        color: #ffffff;
-        cursor: pointer;
+      .container {
+        width: min(1100px, 92%);
+        margin: 0 auto;
       }
 
-      button:hover {
-        background: #1d4ed8;
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background: rgba(246, 248, 252, 0.96);
+        backdrop-filter: blur(5px);
+        border-bottom: 1px solid var(--border);
       }
 
-      #status {
-        margin-top: 0.5rem;
-        font-size: 0.9rem;
-        color: #555;
-      }
-
-      .small-help {
-        font-size: 0.8rem;
-        color: #666;
-        margin-top: 0.25rem;
-      }
-
-      /* Units toggle */
-      .unit-toggle {
-        margin-top: 0.75rem;
-        display: inline-flex;
+      .nav {
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 0.5rem;
+        padding: 0.9rem 0;
+      }
+
+      .brand {
+        font-weight: 800;
+        font-size: 1.2rem;
+        letter-spacing: 0.2px;
+      }
+
+      .nav-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
         font-size: 0.95rem;
       }
 
-      .unit-toggle-label {
+      .hero {
+        padding: 4rem 0 2.5rem;
+      }
+
+      .kicker {
+        color: var(--brand-dark);
+        font-weight: 700;
+        margin-bottom: 0.6rem;
+      }
+
+      h1,
+      h2,
+      h3 {
+        line-height: 1.2;
+        margin: 0 0 0.8rem;
+      }
+
+      h1 {
+        font-size: clamp(2rem, 4vw, 3rem);
+      }
+
+      h2 {
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        margin-top: 2.4rem;
+      }
+
+      .lead {
+        color: var(--muted);
+        max-width: 70ch;
+      }
+
+      .actions {
+        margin-top: 1.4rem;
+        display: flex;
+        gap: 0.8rem;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        display: inline-block;
+        padding: 0.7rem 1rem;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface);
         font-weight: 600;
       }
 
-      .unit-toggle-buttons {
-        display: inline-flex;
-        border-radius: 999px;
-        overflow: hidden;
-        border: 1px solid #d4d4d4;
+      .btn.primary {
+        background: var(--brand);
+        border-color: var(--brand);
+        color: #fff;
       }
 
-      .unit-toggle-buttons button {
-        border: none;
-        padding: 0.25rem 0.75rem;
-        cursor: pointer;
-        background: #f3f4f6;
-        font-size: 0.9rem;
-        margin-top: 0;
+      .section {
+        margin: 1.4rem 0;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 1.2rem;
       }
 
-      .unit-toggle-buttons button.active {
-        background: #2563eb;
-        color: #ffffff;
+      .search-box {
+        display: grid;
+        gap: 0.7rem;
       }
 
-      /* Size buttons – full width stack */
-      .size-block {
-        margin-top: 1rem;
-      }
-
-      .size-label {
-        font-weight: 600;
-        margin-bottom: 0.5rem;
-        display: block;
-      }
-
-      .size-btn {
-        display: block;
+      .search-box input {
         width: 100%;
-        border-radius: 999px;
-        border: 1px solid #d4d4d4;
-        background: #f9fafb;
-        padding: 0.5rem 0.75rem;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 0.7rem 0.8rem;
         font-size: 1rem;
-        cursor: pointer;
-        margin-bottom: 0.4rem;
-        text-align: center;
       }
 
-      .size-btn.active {
-        background: #2563eb;
-        color: #ffffff;
-        border-color: #2563eb;
+      .grid {
+        display: grid;
+        gap: 1rem;
       }
 
-      .size-info {
-        margin-top: 0.25rem;
-        font-size: 0.85rem;
-        color: #555;
-        text-align: center;
+      .vip,
+      .cat {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 1rem;
       }
 
-      .actions-row {
-        display: flex;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
-        flex-wrap: wrap;
+      .vip p,
+      .cat p {
+        margin: 0.35rem 0;
       }
 
-      .actions-row button {
-        flex: 1;
-      }
-
-      .secondary-btn {
-        background: #16a34a;
-      }
-
-      .secondary-btn:hover {
-        background: #15803d;
-      }
-
-      .tertiary-btn {
-        background: #f97316;
-      }
-
-      .tertiary-btn:hover {
-        background: #ea580c;
-      }
-
-      .photos-help {
+      .tag {
+        display: inline-block;
         font-size: 0.8rem;
-        color: #666;
-        margin-top: 0.25rem;
+        color: var(--brand-dark);
+        background: #d1fae5;
+        border-radius: 999px;
+        padding: 0.15rem 0.55rem;
       }
 
-      .photo-buttons-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.5rem;
+      ul {
+        margin: 0.6rem 0 0;
+        padding-left: 1.1rem;
       }
 
-      .small-btn {
-        background: #e5e7eb;
-        color: #111827;
-        font-size: 0.85rem;
-        padding: 0.35rem 0.75rem;
+      footer {
+        margin: 2.4rem 0 1.2rem;
+        color: var(--muted);
+        font-size: 0.92rem;
       }
 
-      .small-btn:hover {
-        background: #d1d5db;
-      }
-
-      @media (min-width: 720px) {
-        .top-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: flex-start;
-          gap: 2rem;
+      @media (min-width: 760px) {
+        .grid.cols-2 {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .top-row > div {
-          flex: 1;
+        .grid.cols-3 {
+          grid-template-columns: repeat(3, minmax(0, 1fr));
         }
       }
     </style>
   </head>
-
   <body>
-    <div class="container">
-      <h1>PatternCraft (Demo)</h1>
-
-      <!-- Bag photos -->
-      <label>Bag photos</label>
-      <div id="photoInputs">
-        <!-- First normal file input -->
-        <input type="file" accept="image/*" class="photo-input" />
+    <header>
+      <div class="container nav">
+        <a href="#" class="brand">AskJack</a>
+        <nav class="nav-links">
+          <a href="#home">Home</a>
+          <a href="#explore">Explore</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#list">List Your Business</a>
+          <a href="#signin">Sign in</a>
+        </nav>
       </div>
+    </header>
 
-      <!-- Hidden camera input (for mobile/tablet capture) -->
-      <input
-        id="cameraInput"
-        type="file"
-        accept="image/*"
-        capture="environment"
-        class="photo-input"
-        style="display: none"
-      />
-
-      <div class="photo-buttons-row">
-        <button type="button" id="addPhotoBtn" class="small-btn">
-          + Add another photo
-        </button>
-        <button type="button" id="takePhotoBtn" class="small-btn">
-          📸 Take a photo
-        </button>
-      </div>
-
-      <div class="photos-help">
-        You can upload or snap multiple photos of the same project (front, side,
-        back, inside).
-      </div>
-
-      <!-- Notes -->
-      <label for="userText">Optional notes about the bag</label>
-      <textarea
-        id="userText"
-        placeholder="e.g. Medium tote with zip, front pocket, and short handles."
-      ></textarea>
-
-      <!-- Units + Size -->
-      <div class="top-row" style="margin-top: 0.75rem">
-        <!-- Units -->
-        <div>
-          <div class="unit-toggle">
-            <span class="unit-toggle-label">Units:</span>
-            <div class="unit-toggle-buttons">
-              <button type="button" id="unitsCm" data-units="cm" class="active">
-                cm
-              </button>
-              <button type="button" id="unitsIn" data-units="in">inch</button>
-            </div>
-          </div>
+    <main class="container">
+      <section id="home" class="hero">
+        <p class="kicker">Find trusted local services fast</p>
+        <h1>Digital neighbors for the East Rand. Sorted.</h1>
+        <p class="lead">
+          AskJack highlights vetted professionals so you can book with confidence and
+          get on with your day.
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="#explore">Explore categories</a>
+          <a class="btn" href="#list">Are you a business owner?</a>
         </div>
+        <p class="lead">
+          AskJack: the shortcut between “who do I call?” and “it’s sorted.”
+        </p>
+      </section>
 
-        <!-- Size -->
-        <div class="size-block">
-          <span class="size-label">Size:</span>
-          <button type="button" class="size-btn" data-size="S">S</button>
-          <button type="button" class="size-btn active" data-size="M">
-            M
-          </button>
-          <button type="button" class="size-btn" data-size="L">L</button>
-          <button type="button" class="size-btn" data-size="XL">XL</button>
-          <button type="button" class="size-btn" data-size="XXL">XXL</button>
-          <div id="sizeInfo" class="size-info">
-            M — approx. 30 × 40 × 13 (W×H×D).
-          </div>
+      <section id="explore" class="section">
+        <h2>Search</h2>
+        <div class="search-box">
+          <label for="search">Search companies or services</label>
+          <input id="search" type="text" placeholder="Search by company name, service, or category." />
+          <a class="btn primary" href="#">Search</a>
         </div>
-      </div>
+      </section>
 
-      <!-- Generate -->
-      <button id="generateBtn" style="margin-top: 1.2rem">
-        Generate Pattern JSON
-      </button>
-      <div id="status"></div>
+      <section class="section">
+        <h2>The VIP booth (locals you should know).</h2>
+        <p class="lead">Always-on favorites with a front-row seat on the homepage.</p>
+        <div class="grid cols-3">
+          <article class="vip">
+            <span class="tag">Digital Marketing</span>
+            <h3>Moerse Media</h3>
+            <p>Strategy, content, and campaigns that get local brands noticed.</p>
+            <a class="btn" href="#">Visit website</a>
+          </article>
+          <article class="vip">
+            <span class="tag">IT Support</span>
+            <h3>Technoobs</h3>
+            <p>Friendly tech help, device fixes, and business IT support.</p>
+            <a class="btn" href="#">Visit website</a>
+          </article>
+          <article class="vip">
+            <span class="tag">Company Registration</span>
+            <h3>Register My Business</h3>
+            <p>Fast, guided CIPC registrations and compliance support.</p>
+            <a class="btn" href="#">Visit website</a>
+          </article>
+        </div>
+      </section>
 
-      <!-- Copy / Download -->
-      <div class="actions-row">
-        <button id="copyBtn" type="button" class="secondary-btn">
-          Copy Output
-        </button>
-        <button id="downloadBtn" type="button" class="tertiary-btn">
-          Download as .txt
-        </button>
-      </div>
+      <section class="section">
+        <h2>The category shortlists (no doom-scrolling).</h2>
+        <p class="lead">One featured spot per main category.</p>
+        <div class="grid cols-2">
+          <article class="cat"><h3>Business &amp; Professional Services</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Home Services &amp; Maintenance</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Automotive</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Health &amp; Medical</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Beauty &amp; Personal Care</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Food &amp; Hospitality</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Construction &amp; Industrial</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Property &amp; Real Estate</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Cleaning &amp; Pest Control</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>IT &amp; Digital Services</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Education &amp; Training</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Events &amp; Creative</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Retail &amp; Services</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+          <article class="cat"><h3>Security</h3><p>Featured spot available for this category.</p><a class="btn" href="#">Get featured</a></article>
+        </div>
+      </section>
 
-      <!-- Output -->
-      <label for="result" style="margin-top: 1rem">PatternCraft JSON output</label>
-      <textarea id="result" readonly></textarea>
-    </div>
+      <section class="section">
+        <h2>Know the turf before the turf knows you.</h2>
+        <p class="lead">The East Rand, scoped and searchable.</p>
+        <h3>Good help is closer than your kettle.</h3>
+        <p>Start in the East Rand to keep results local and trustworthy.</p>
+        <article class="cat">
+          <h3>The East Rand</h3>
+          <p>Local services that are easy to compare and contact.</p>
+          <a class="btn primary" href="#">Explore Listings</a>
+        </article>
+      </section>
 
-    <!-- Frontend logic -->
-    <script type="module">
-      // ⚠️ Make sure this matches your deployed Supabase edge URL
-      const PATTERNCRAFT_URL =
-        "https://haikwxscdgxplftrkqbi.supabase.co/functions/v1/patterncraft-generate";
+      <section class="section" id="pricing">
+        <h2>Why AskJack feels different</h2>
+        <p class="lead">Less guessing, more getting-it-done.</p>
+        <ul>
+          <li>Local-first results that do not wander off</li>
+          <li>Clean categories, no rabbit holes</li>
+          <li>Real contact details, not scavenger hunts</li>
+          <li>Less noise, more “sorted”</li>
+          <li>Quality that does not ghost you</li>
+        </ul>
+      </section>
 
-      // Elements
-      const photoInputsContainer = document.getElementById("photoInputs");
-      const addPhotoBtn = document.getElementById("addPhotoBtn");
-      const takePhotoBtn = document.getElementById("takePhotoBtn");
-      const cameraInput = document.getElementById("cameraInput");
-      const userTextInput = document.getElementById("userText");
-      const generateBtn = document.getElementById("generateBtn");
-      const statusEl = document.getElementById("status");
-      const resultEl = document.getElementById("result");
-      const copyBtn = document.getElementById("copyBtn");
-      const downloadBtn = document.getElementById("downloadBtn");
+      <section class="section" id="list">
+        <h2>Run a business in the East Rand?</h2>
+        <p>
+          Put your name where locals actually look. We handle the trust, you handle
+          the work.
+        </p>
+        <div class="actions">
+          <a class="btn" href="#pricing">View Pricing</a>
+          <a class="btn primary" href="#">List Your Business</a>
+        </div>
+      </section>
 
-      // Units toggle
-      const unitsCmBtn = document.getElementById("unitsCm");
-      const unitsInBtn = document.getElementById("unitsIn");
-      let currentUnits = "cm";
-
-      function setUnits(units) {
-        currentUnits = units;
-        if (units === "cm") {
-          unitsCmBtn.classList.add("active");
-          unitsInBtn.classList.remove("active");
-        } else {
-          unitsCmBtn.classList.remove("active");
-          unitsInBtn.classList.add("active");
-        }
-      }
-
-      unitsCmBtn.addEventListener("click", () => setUnits("cm"));
-      unitsInBtn.addEventListener("click", () => setUnits("in"));
-
-      // Size presets
-      const sizeButtons = document.querySelectorAll(".size-btn");
-      const sizeInfoEl = document.getElementById("sizeInfo");
-      let selectedSize = "M";
-
-      const sizePresets = {
-        S: "S — approx. 24 × 30 × 10 (W×H×D).",
-        M: "M — approx. 30 × 40 × 13 (W×H×D).",
-        L: "L — approx. 36 × 46 × 15 (W×H×D).",
-        XL: "XL — approx. 40 × 50 × 18 (W×H×D).",
-        XXL: "XXL — approx. 45 × 55 × 20 (W×H×D)."
-      };
-
-      function updateSizeInfo() {
-        sizeInfoEl.textContent =
-          sizePresets[selectedSize] || "Custom size selected.";
-      }
-
-      sizeButtons.forEach((btn) => {
-        btn.addEventListener("click", () => {
-          sizeButtons.forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-          selectedSize = btn.getAttribute("data-size");
-          updateSizeInfo();
-        });
-      });
-
-      updateSizeInfo();
-
-      // Add another photo input (gallery / files)
-      addPhotoBtn.addEventListener("click", () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = "image/*";
-        input.className = "photo-input";
-        photoInputsContainer.appendChild(input);
-      });
-
-      // Take a photo (opens camera on mobile/tablet)
-      takePhotoBtn.addEventListener("click", () => {
-        cameraInput.click();
-      });
-
-      // File -> base64 helper
-      function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = () => {
-            const base64 = String(reader.result).split(",")[1];
-            resolve(base64);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      }
-
-      // Generate button
-      generateBtn.addEventListener("click", async () => {
-        try {
-          resultEl.value = "";
-          statusEl.textContent = "Preparing images…";
-
-          const fileInputs = Array.from(
-            document.querySelectorAll(".photo-input")
-          );
-
-          const files = fileInputs
-            .map((input) => input.files && input.files[0])
-            .filter(Boolean);
-
-          if (!files.length) {
-            alert("Please choose or take at least one photo.");
-            statusEl.textContent = "No images selected.";
-            return;
-          }
-
-          const images = [];
-          for (const file of files) {
-            const base64 = await fileToBase64(file);
-            images.push({
-              imageBase64: base64,
-              imageMimeType: file.type || "image/jpeg"
-            });
-          }
-
-          statusEl.textContent = "Calling PatternCraft…";
-
-          const response = await fetch(PATTERNCRAFT_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-              images,
-              userText: userTextInput.value.trim(),
-              units: currentUnits,
-              sizeLabel: selectedSize
-            })
-          });
-
-          if (!response.ok) {
-            const text = await response.text();
-            console.error("PatternCraft error:", text);
-            statusEl.textContent = "Error from PatternCraft.";
-            alert("PatternCraft error. Please try again.");
-            return;
-          }
-
-          const data = await response.json();
-          let outputText;
-
-          if (typeof data === "string") {
-            outputText = data;
-          } else if (data.patternText || data.patternJson) {
-            // Prefer showing pretty JSON if we have parsed JSON
-            if (data.patternJson) {
-              outputText = JSON.stringify(data.patternJson, null, 2);
-            } else {
-              outputText = data.patternText;
-            }
-          } else {
-            outputText = JSON.stringify(data, null, 2);
-          }
-
-          resultEl.value = outputText || "(No pattern returned)";
-          statusEl.textContent =
-            (data.patternJson && data.patternJson.status) || "Done!";
-        } catch (err) {
-          console.error(err);
-          statusEl.textContent = "Error calling PatternCraft.";
-          alert("Something went wrong. Please try again.");
-        }
-      });
-
-      // Copy button
-      copyBtn.addEventListener("click", async () => {
-        if (!resultEl.value.trim()) {
-          alert("Nothing to copy.");
-          return;
-        }
-        await navigator.clipboard.writeText(resultEl.value);
-        statusEl.textContent = "Copied!";
-      });
-
-      // Download button
-      downloadBtn.addEventListener("click", () => {
-        if (!resultEl.value.trim()) {
-          alert("Nothing to download.");
-          return;
-        }
-        const blob = new Blob([resultEl.value], {
-          type: "text/plain;charset=utf-8"
-        });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = "patterncraft-pattern.txt";
-        link.click();
-      });
-    </script>
+      <footer id="signin">
+        <p><strong>AskJack</strong> — The trusted place to find local services.</p>
+        <p>About · Privacy · Terms · Contact</p>
+        <p>© AskJack · Website created by MoerseMedia</p>
+      </footer>
+    </main>
   </body>
 </html>
